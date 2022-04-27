@@ -1,0 +1,565 @@
+#+title: Emacs confiiguration
+#+author: hypn0x
+
+* Package setting
+#+begin_src emacs-lisp :tangle "yes"
+  (require 'package)
+  (setq package-enable-at-startup nil) ;; Doom Emacs trick to speed run
+  (setq package-archives '(("ELPA" . "https://tromey.com/elpa")
+			   ("gnu" . "https://elpa.gnu.org/packages")
+			   ("melpa" . "https://melpa.org/packages/")))
+  (setq url-http-attempt-keeplives nil)
+  (setq package-check-signature nil)
+#+end_src
+
+I use ~straight.el~ for package management.
+
+#+begin_src emacs-lisp :tangle "yes"
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
+#+end_src
+
+I also use use-package
+
+#+begin_src emacs-lisp :tangle "yes"
+  (straight-use-package 'use-package)
+  (eval-when-compile
+    (require 'use-package))
+  ;; Automatically install all packages with straight.el if not present.
+  (setq straight-use-package-by-default t)
+  ;; Always lazy-load if doable. TODO Properly look into good defer setup
+  (setq use-package-always-defer t)
+  (use-package general)
+  (use-package projectile)
+  (use-package s)
+#+end_src
+
+Activate the native lisp compiler for performance purpose
+
+#+begin_src emacs-lisp :tangle (if (string-match-p (regexp-quote "NATIVE_COMP") system-configuration-features) "yes" "no")
+    (setq package-native-compile t)
+    (setq comp-deferred-compilation t)
+    (setq native-comp-deferred-compilation-deny-list nil)
+    (setq warning-suppress-log-types '((comp)))
+#+end_src
+
+* Speed
+Optimizing startup
+
+#+begin_src emacs-lisp :tangle "yes"
+    ;; Go back to normal GC behavior after init
+    (add-hook 'emacs-startup-hook
+              (lambda ()
+                (setq gc-cons-threshold 16777216 ; 16mb
+                      gc-cons-percentage 0.1)))
+
+    ;; Don't do GC when the minibuffer is being used (lag during minibuffer usage is frustrating)
+    (defun doom-defer-garbage-collection-h ()
+      "Disable garbage collection."
+      (setq gc-cons-threshold most-positive-fixnum))
+
+    (defun doom-restore-garbage-collection-h ()
+      "Restore garbage collection."
+      (run-at-time
+       1 nil (lambda () (setq gc-cons-threshold 16777216))))
+
+    (add-hook 'minibuffer-setup-hook #'doom-defer-garbage-collection-h)
+    (add-hook 'minibuffer-exit-hook #'doom-restore-garbage-collection-h)
+    ;; GCMH (literally Garbage Collector Magic Hack) optimizes GC calls?
+    (use-package gcmh
+      :init
+      (setq gcmh-idle-delay 5)
+      (setq gcmh-high-cons-threshold (* 16 1024 1024))
+      (gcmh-mode))
+#+end_src
+
+* Remove the annoying default configs
+
+#+begin_src emacs-lisp :tangle "yes"
+  ;; Turn off all unnecessary GUI elements.
+  (tool-bar-mode -1)
+  (menu-bar-mode -1)
+
+  ;; Unless something is actively exploding, I do not care.
+  (setq warning-minimum-level :emergency)
+
+  ;; customize is the worst.
+  (setq custom-file "/dev/null")
+  (setq package-selected-packages "/dev/null/")
+
+  ;; These keybinds suspend Emacs (in order to mimic terminal behavior).
+  ;; This has *only* caused me trouble in GUI Emacs.
+  (when (display-graphic-p)
+    (global-unset-key (kbd "C-z"))
+    (global-unset-key (kbd "C-x C-z")))
+
+  ;; Stop making backup files everywhere, put them all in one place!
+  (setq backup-directory-alist `(("." . "~/.saves")))
+  (setq backup-by-copying t)
+
+  ;; Stop Emacs from bothering you about disabled commands.
+  (setq disabled-command-function nil)
+
+  ;; Prevent any attempts to resize the frame.
+  (setq frame-inhibit-implied-resize t)
+
+  ;; Stop Emacs from trying to use dialog boxes.
+  (setq use-dialog-box nil)
+
+  ;; Prefer y/n over yes/no.
+  (fset 'yes-or-no-p 'y-or-n-p)
+
+  ;; Mouse behavior tweaks? TODO look into me
+  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
+  (setq mouse-wheel-progressive-speed nil)
+
+  ;; Visual line mode is just better.
+  (global-visual-line-mode)
+#+end_src
+
+* System package manager configs
+#+begin_src emacs-lisp :tangle "yes"
+  (defun process-exit-code-and-output (program &rest args)
+    "Run PROGRAM with ARGS and return the exit code and output in a list."
+    (with-temp-buffer
+      (list (apply 'call-process program nil (current-buffer) nil args)
+            (buffer-string))))
+
+  (defun get-distro-or-os ()
+    "Return the Linux distribution or OS Emacs is running on."
+    (if (eq system-type 'darwin)
+        "Darwin"
+      (when (eq system-type 'gnu/linux)
+        (if (file-exists-p "/etc/os-release")
+            (substring (shell-command-to-string "source /etc/os-release && echo $NAME") 0 -1)
+          (substring (car (cdr (process-exit-code-and-output "uname" "-o"))) 0 -1)))))
+#+end_src
+
+[[https://gitlab.com/jabranham/system-packages][system-packages]] is a nice program that helps us to install packages throught the OS inside emacs
+
+#+begin_src emacs-lisp :tangle "yes"
+  (use-package system-packages
+    :init
+    (let (os-name (get-distro-or-os))
+      ;; system-packages doesn't support yay by default, so add it.
+      (when (string= os-name "Arch Linux")
+            (add-to-list 'system-packages-supported-package-managers
+                         '(yay .
+                               ((default-sudo . nil)
+                                (install . "yay -S")
+                                (uninstall . "yay -Rs")
+                                (update . "yay -Syu")
+                                (log . "cat /var/log/pacman.log")
+                                (change-log . "yay -Qc")
+                                (clean-cache . "yay -Sc")
+                                (get-info . "yay -Qi")
+                                (get-info-remote . "yay -Si")
+                                (list-files-provided-by . "yay -Ql")
+                                (owning-file . "yay -Qo")
+                                (verify-all-dependencies . "yay -Dk")
+                                (remove-orphaned . "yay -Rsn $(pacman -Qtdq)")
+                                (list-installed-packages . "yay -Qe")
+                                (list-installed-packages-all . "yay -Q")
+                                (noconfirm . "--noconfirm"))))
+            (setq system-packages-package-manager 'yay))
+      (when (string= os-name "Debian GNU/Linux")
+            (setq system-packages-use-sudo t)
+            (setq system-packages-package-manager 'apt))
+      (if (string= os-name "Darwin")
+          (setq system-packages-package-manager 'brew)))
+      (setq system-packages-noconfirm t))
+#+end_src
+
+* Projectile setting
+First, install projectile
+M-x package-install [RET] projectile [RET]
+#+begin_src emacs-lisp :tangle "yes"
+
+(projectile-mode +1)
+(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  
+#+end_src
+
+* Theming
+** Finally my favorite part, let's hack our interface
+
+** First, install treemacs
+#+begin_src emacs-lisp :tangle "yes"
+
+    (use-package treemacs
+    :ensure t
+    :defer t
+    :init
+    (with-eval-after-load 'winum
+      (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+    :config
+    (progn
+      (setq treemacs-collapse-dirs                   (if treemacs-python-executable 3 0)
+	    treemacs-deferred-git-apply-delay        0.5
+	    treemacs-directory-name-transformer      #'identity
+	    treemacs-display-in-side-window          t
+	    treemacs-eldoc-display                   'simple
+	    treemacs-file-event-delay                5000
+	    treemacs-file-extension-regex            treemacs-last-period-regex-value
+	    treemacs-file-follow-delay               0.2
+	    treemacs-file-name-transformer           #'identity
+	    treemacs-follow-after-init               t
+	    treemacs-expand-after-init               t
+	    treemacs-find-workspace-method           'find-for-file-or-pick-first
+	    treemacs-git-command-pipe                ""
+	    treemacs-goto-tag-strategy               'refetch-index
+	    treemacs-indentation                     2
+	    treemacs-indentation-string              " "
+	    treemacs-is-never-other-window           nil
+	    treemacs-max-git-entries                 5000
+	    treemacs-missing-project-action          'ask
+	    treemacs-move-forward-on-expand          nil
+	    treemacs-no-png-images                   nil
+	    treemacs-no-delete-other-windows         t
+	    treemacs-project-follow-cleanup          nil
+	    treemacs-persist-file                    (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+	    treemacs-position                        'left
+	    treemacs-read-string-input               'from-child-frame
+	    treemacs-recenter-distance               0.1
+	    treemacs-recenter-after-file-follow      nil
+	    treemacs-recenter-after-tag-follow       nil
+	    treemacs-recenter-after-project-jump     'always
+	    treemacs-recenter-after-project-expand   'on-distance
+	    treemacs-litter-directories              '("/node_modules" "/.venv" "/.cask")
+	    treemacs-show-cursor                     nil
+	    treemacs-show-hidden-files               t
+	    treemacs-silent-filewatch                nil
+	    treemacs-silent-refresh                  nil
+	    treemacs-sorting                         'alphabetic-asc
+	    treemacs-select-when-already-in-treemacs 'move-back
+	    treemacs-space-between-root-nodes        t
+	    treemacs-tag-follow-cleanup              t
+	    treemacs-tag-follow-delay                1.5
+	    treemacs-text-scale                      nil
+	    treemacs-user-mode-line-format           nil
+	    treemacs-user-header-line-format         nil
+	    treemacs-wide-toggle-width               70
+	    treemacs-width                           35
+	    treemacs-width-increment                 1
+	    treemacs-width-is-initially-locked       t
+	    treemacs-workspace-switch-cleanup        nil)
+
+      ;; The default width and height of the icons is 22 pixels. If you are
+      ;; using a Hi-DPI display, uncomment this to double the icon size.
+      ;;(treemacs-resize-icons 44)
+
+      (treemacs-follow-mode t)
+      (treemacs-filewatch-mode t)
+      (treemacs-fringe-indicator-mode 'always)
+
+      (pcase (cons (not (null (executable-find "git")))
+		   (not (null treemacs-python-executable)))
+	(`(t . t)
+	 (treemacs-git-mode 'deferred))
+	(`(t . _)
+	 (treemacs-git-mode 'simple)))
+
+      (treemacs-hide-gitignored-files-mode nil))
+    :bind
+    (:map global-map
+	  ("M-0"       . treemacs-select-window)
+	  ("C-x t 1"   . treemacs-delete-other-windows)
+	  ("C-x t t"   . treemacs)
+	  ("C-x t d"   . treemacs-select-directory)
+	  ("C-x t B"   . treemacs-bookmark)
+	  ("C-x t C-t" . treemacs-find-file)
+	  ("C-x t M-t" . treemacs-find-tag)))
+
+  (use-package treemacs-evil
+    :after (treemacs evil)
+    :ensure t)
+
+  (use-package treemacs-projectile
+    :after (treemacs projectile)
+    :ensure t)
+
+  (use-package treemacs-icons-dired
+    :hook (dired-mode . treemacs-icons-dired-enable-once)
+    :ensure t)
+
+  (use-package treemacs-magit
+    :after (treemacs magit)
+    :ensure t)
+
+  (use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
+    :after (treemacs persp-mode) ;;or perspective vs. persp-mode
+    :ensure t
+    :config (treemacs-set-scope-type 'Perspectives))
+
+  (use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
+    :after (treemacs)
+    :ensure t
+    :config (treemacs-set-scope-type 'Tabs))
+  
+#+end_src
+
+** Time to hacking the theme
+
+#+begin_src emacs-lisp :tangle "yes"
+
+  ;TODO: install one-dark using MELPA
+
+  (load-theme 'one-dark t)
+    ;; Don't change the font for some headings and titles
+    (setq emacs-one-use-variable-pitch nil)
+
+    ;; Don't change size of org-mode headlines (but keep other size-changes)
+    (setq emacs-one-scale-org-headlines nil)
+
+    ;; Avoid all font-size changes
+    (setq emacs-one-height-minus-1 1.0)
+    (setq emacs-one-height-plus-1 1.0)
+    (setq emacs-one-height-plus-2 1.0)
+    (setq emacs-one-height-plus-3 1.0)
+    (setq emacs-one-height-plus-4 1.0)
+#+end_src
+
+*** Lets add some dashboard
+
+more informations at [[https://github.com/emacs-dashboard/emacs-dashboard][emacs-dashboard]]
+
+#+begin_src emacs-lisp :tangle "yes"
+
+  (require 'dashboard)
+  (dashboard-setup-startup-hook)
+  ;; Set the title
+  (setq dashboard-banner-logo-title "Wubba Lubba Dub Dub")
+  ;; Set the banner
+  (setq dashboard-startup-banner 3)
+
+  ;; Content is not centered by default. To center, set
+  (setq dashboard-center-content t)
+  ;; To disable shortcut "jump" indicators for each section, set
+  ;(setq dashboard-show-shortcuts nil)
+  ;; Customize wich widget to be displayed
+  (setq dashboard-items '((recents  . 5)
+			  (bookmarks . 5)
+			  (projects . 5)
+			  (agenda . 5)
+			  (registers . 5)))
+
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons t)
+
+  (setq dashboard-set-navigator t)
+
+  ;; Set info about loaded packages at init
+  (setq dashboard-set-init-info t)
+
+  ;; Customizing the header message
+  (setq dashboard-init-info "ArchBTW")
+
+  ;; Foooter messages customization
+  (setq dashboard-footer-messages '("Dashboard is pretty cool!"
+				  "ArchBTW"))
+
+  (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
+
+  (add-to-list 'dashboard-items '(agenda) t)
+  (setq dashboard-week-agenda t)
+
+#+end_src
+
+*** Dashboard shortcuts
+
+| Shortcuts     | Function         |
+| Tab or C-i    | Next item        |
+| Shift-Tab     | Prev item        |
+| Retuen or C-m | Open             |
+| r             | Recent files     |
+| m             | Bookmarks        |
+| p             | Projects         |
+| a             | Org-Mode Agenda  |
+| e             | Registers        |
+| g             | Refresh contents |
+| {             | Prev section     |
+| }             | Next section     |
+
+** Visualization
+
+[[https://github.com/Fanael/rainbow-delimiters][Rainbow delimeters]] is a "rainbow parentheses"-like mode which highlights delimiters such as parentheses, brackets or braces according to their depth.
+
+[[https://github.com/benma/visual-regexp.el][visual-regexp]] to visualize the regex.
+
+#+begin_src emacs-lisp :tangle "yes"
+(add-to-list 'load-path "folder-in-which-visual-regexp-files-are-in/") ;; if the files are not already in the load path
+(require 'visual-regexp)
+(define-key global-map (kbd "C-c r") 'vr/replace)
+(define-key global-map (kbd "C-c q") 'vr/query-replace)
+
+#+end_src
+
+[[https://github.com/gonewest818/dimmer.el][dimmer]] to find out wich buffer is active by diming others
+
+#+begin_src emacs-lisp :tangle "yes"
+ (require 'dimmer)
+ (dimmer-configure-which-key)
+ (dimmer-configure-helm)
+ (dimmer-mode t)
+#+end_src
+
+[[https://github.com/jcs-elpa/goto-line-preview][goto-line-preview]] allows us to see a line when we want to jump on it.
+
+Install it with melpa:
+ 'ESC + x -> M-x:package-install -> Enter -< goto-line-preview -> Enter'
+Activate it:
+ 'Esc + x -> M-x: goto-line-preview'
+
+[[https://github.com/sulami/literate-calc-mode.el][Calc Mode]] is a nice tool that shows us the result of a calculation
+
+#+begin_src emacs-lisp :tangle "yes"
+(use-package literate-calc-mode
+  :ensure t)
+#+end_src
+
+Math preview allows us to display TeX and MathML math inline in Emacs buffers.
+
+NOTE: it requires external nodejs program *math-preview*
+
+> npm install -g git+https://gitlab.com/matsievskiysv/math-preview
+
+Install the package using MELPA
+
+> M-x+package-install+math-preview
+
+TODO: write usages
+
+** Editing
+
+move-up allows us to moving and duplicating line and/or lines.
+
+#+begin_src emacs-lisp :tangle "yes"
+
+  (require 'move-dup)
+  (global-set-key (kbd "M-<up>") 'move-dup-move-lines-up)
+  (global-set-key (kbd "M-<down>") 'move-dup-move-lines-down)
+  (global-set-key (kbd "C-M-<up>") 'move-dup-duplicate-up)
+  (global-set-key (kbd "C-M-<down>") 'move-dup-duplicate-down)
+
+#+end_src
+
+*Usages:*
+
+Press meta key and move down and/or up the line or selected lines.
+For duplicate a line or multiple lines, press meta key + ctrl then up and/or down.
+
+** Programming
+
+*** smartparens would take care about pairs
+
+> M-x-> package-install -> smartparrens
+
+#+begin_src emacs-lisp :tangle "yes"
+
+  (add-hook 'c-mode-hook #'smartparens-strict-mode)
+  (add-hook 'c++-mode-hook #'smartparens-strict-mode)
+
+#+end_src
+
+*** aggressive indent mode
+
+#+begin_src emacs-lisp :tangle "yes"
+
+  ; Dont really need it
+  ;(global-aggressive-indent-mode 1)
+  ;(add-to-list 'aggressive-indent-excluded-modes 'html-mode)
+
+#+end_src
+
+*** indent-guide
+
+show vertical lines to guide indentation
+
+#+begin_src emacs-lisp :tangle "yes"
+
+  (require 'indent-guide)
+  (indent-guide-global-mode)
+
+#+end_src
+
+*** whitespace-cleanup
+
+Clean the whitespaces in a smart manner
+
+Install with MELPA
+> M+x -> package-install -> whitespace-cleanup-mode -> Ret
+
+Enable in an individual buffer:
+> M-x whitespace-cleanup-mode
+
+*** auto-complete
+
+Install using MELPA
+
+> M-x package-install [RET] auto-complete [RET]
+
+#+begin_src emacs-lisp :tangle "yes"
+
+  (ac-config-default)
+  
+#+end_src
+
+*** dumb-jump
+
+jump to definition package
+
+> M-x package-install [RET] dumb-jump [RET]
+
+#+begin_src emacs-lisp :tangle "yes"
+
+  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+  
+#+end_src
+
+Once installed, commands could be found in M+x under *dumb-jump-...*
+
+TOOD: Write key bindings
+
+* Debug
+
+TODO: checkout [[https://github.com/realgud][realgud]]
+
+*** C/C++
+
+[[https://github.com/emacs-lsp/emacs-ccls][emacs-ccls]]
+
+#+begin_src emacs-lisp :tangle "yes"
+
+  (use-package lsp-mode :commands lsp)
+(use-package lsp-ui :commands lsp-ui-mode)
+
+(use-package ccls
+  :hook ((c-mode c++-mode objc-mode cuda-mode) .
+         (lambda () (require 'ccls) (lsp))))
+  (require 'ccls)
+  (setq ccls-executable "/path/to/ccls/Release/ccls")
+
+#+end_src
+
+TODO: add path finding and better compilation enhancement, maybe...
+
+TODO: MAGITTTTTTTTT
+
+TODO: Moreeeeeeeeee Orgggggg-Modeeeeeeee
+
+TODO: Shell integration and much moreeeeeeeee thingssssssss
+
+
+
+I'm really tired  :(
