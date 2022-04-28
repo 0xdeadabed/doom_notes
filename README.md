@@ -11,11 +11,14 @@
 - Please make sure you read and understand well what you are doing ( MEANS DON'T COPY PASTE what you don't know )
 - Feel free to read the emacs wiki to understand better their philosophy, emacs is more than a text editor after all.
 
+---
 
 # Installation
 - I have written my config in [org-mode](https://emacs.christianbaeuerlein.com/my-org-config.html#orgc3bc9b5), you probably want to do same, in order to take proper notes.
 - Copy the init.el into your .emacs.d/ inside your home directory and read the config.org carefully, I have put notes and explainations inside it.
 - In case of any issues or doutes, please refer to the emacs wiki or [awesome-emacs](https://github.com/emacs-tw/awesome-emacs#interface-enhancement)
+
+---
 
 # Emacs basics
 
@@ -30,7 +33,7 @@ Welcome to emacs, a subjectively best, advanced, extensible, customizable, self-
 
 Emacs uses multiple keybinding, meaning to do shortcuts you have to do multiple shortcuts, it may seems hard and even brainfuck but belive me it is not, it's a key which allows us to do more amazing things.
 
-[keyInputs][https://www.gnu.org/software/emacs/manual/html_node/emacs/User-Input.html]
+[keyInputs]: [https://www.gnu.org/software/emacs/manual/html_node/emacs/User-Input.html]
 
 ### Key shortcuts
 
@@ -49,6 +52,8 @@ Every shortcut keys is some functions or commands happening under the hood, crea
 
 [KeysAndCommands]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Commands.html
 [keymaps]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Keymaps.html
+
+---
 
 ### Modes
 
@@ -69,10 +74,13 @@ There is minor mode too, but I think I will not talk about it since it's optiona
 
 [minorm]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Minor-Modes.html
 
+---
 
 ### Getting help
 
 As we have already said emacs is self-documented, meanning everything is documented inside emacs itself, if you need a well-written documentation you may consider open the help buffer by using `C-h` shortcut.
+
+---
 
 ### Text editing
 
@@ -85,6 +93,12 @@ No more `i` to write like the evil editor, inserting text in emacs is really sim
 #### Deleting text
 
 As any normal text editors, backspace and delete behave normally, beside we have `C-d` that deletes the character just after the pointer, and `C-k` which deletes a line, `M-d` deltes a word.
+
+#### Undoing changes
+
+The deafault undo shortcut `C-x u` does the basic undoing, but note that there is [Undo Tree][utree] which offers much more functionalities, I'll try to get used to it.
+
+[utree]: https://www.emacswiki.org/emacs/UndoTree
 
 ---------------------
 
