@@ -145,6 +145,16 @@ Optimizing startup
           (substring (car (cdr (process-exit-code-and-output "uname" "-o"))) 0 -1)))))
 #+end_src
 
+* Indentation settings
+
+Enable/Disable tabs
+
+#+begin_src
+(setq-default indent-tabs-mode t)
+(setq-default tab-width 4) ; Assuming you want your tabs to be four spaces wide
+(defvaralias 'c-basic-offset 'tab-width)
+#+end_src
+
 [[https://gitlab.com/jabranham/system-packages][system-packages]] is a nice program that helps us to install packages throught the OS inside emacs
 
 #+begin_src emacs-lisp :tangle "yes"
@@ -185,9 +195,9 @@ First, install projectile
 M-x package-install [RET] projectile [RET]
 #+begin_src emacs-lisp :tangle "yes"
 
-(projectile-mode +1)
-(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  (projectile-mode +1)
+  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
   
 #+end_src
 
@@ -336,43 +346,43 @@ more informations at [[https://github.com/emacs-dashboard/emacs-dashboard][emacs
 
 #+begin_src emacs-lisp :tangle "yes"
 
-  (require 'dashboard)
-  (dashboard-setup-startup-hook)
-  ;; Set the title
-  (setq dashboard-banner-logo-title "Wubba Lubba Dub Dub")
-  ;; Set the banner
-  (setq dashboard-startup-banner 3)
+     (require 'dashboard)
+     (dashboard-setup-startup-hook)
+     ;; Set the title
+     (setq dashboard-banner-logo-title "Wubba Lubba Dub Dub")
+     ;; Set the banner
+     (setq dashboard-startup-banner 1)
 
-  ;; Content is not centered by default. To center, set
-  (setq dashboard-center-content t)
-  ;; To disable shortcut "jump" indicators for each section, set
-  ;(setq dashboard-show-shortcuts nil)
-  ;; Customize wich widget to be displayed
-  (setq dashboard-items '((recents  . 5)
-			  (bookmarks . 5)
-			  (projects . 5)
-			  (agenda . 5)
-			  (registers . 5)))
+     ;; Content is not centered by default. To center, set
+     (setq dashboard-center-content t)
+     ;; To disable shortcut "jump" indicators for each section, set
+     ;(setq dashboard-show-shortcuts nil)
+     ;; Customize wich widget to be displayed
+     (setq dashboard-items '((recents  . 5)
+			     (bookmarks . 5)
+			     (projects . 5)
+			     (agenda . 5)
+			     (registers . 5)))
 
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons t)
+     (setq dashboard-set-heading-icons t)
+     (setq dashboard-set-file-icons t)
 
-  (setq dashboard-set-navigator t)
+     (setq dashboard-set-navigator t)
 
-  ;; Set info about loaded packages at init
-  (setq dashboard-set-init-info t)
+     ;; Set info about loaded packages at init
+     (setq dashboard-set-init-info t)
 
-  ;; Customizing the header message
-  (setq dashboard-init-info "ArchBTW")
+     ;; Customizing the header message
+     (setq dashboard-init-info "ArchBTW")
 
-  ;; Foooter messages customization
-  (setq dashboard-footer-messages '("Dashboard is pretty cool!"
-				  "ArchBTW"))
+     ;; Foooter messages customization
+     (setq dashboard-footer-messages '("Allez danser la salsa quelque part"
+				     "ArchBTW"))
 
-  (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
+     (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
 
-  (add-to-list 'dashboard-items '(agenda) t)
-  (setq dashboard-week-agenda t)
+     (add-to-list 'dashboard-items '(agenda) t)
+     (setq dashboard-week-agenda t)
 
 #+end_src
 
@@ -552,13 +562,61 @@ TODO: checkout [[https://github.com/realgud][realgud]]
 
 #+end_src
 
-TODO: add path finding and better compilation enhancement, maybe...
+* Markdown
 
-TODO: MAGITTTTTTTTT
+[[https://jblevins.org/projects/markdown-mode/][Markdown Mode]] is a major mode for editing Markdown-formatted text.
 
-TODO: Moreeeeeeeeee Orgggggg-Modeeeeeeee
+***  TODO maybe consider installing multimarkdown
 
-TODO: Shell integration and much moreeeeeeeee thingssssssss
+#+begin_src emacs-lisp :tangle "yes"
+
+  (require 'package)
+  (add-to-list 'package-archives
+		 '("melpa-stable" . "https://stable.melpa.org/packages/"))
+   (package-initialize)
+
+   (use-package markdown-mode
+    :ensure t
+    :mode ("README\\.md\\'" . gfm-mode)
+    :init (setq markdown-command "multimarkdown"))
+
+#+end_src
+
+*Usage*
+
+C-c C-c l -> To see the markdown preview in a live buffer.
+
+* Custom Settings
+
+Set split to side-by-side
+
+#+begin_src emacs-lisp :tangle "yes"
+
+  (setq split-height-threshold nil)
+  (setq split-width-threshold 0)
+  
+#+end_src
+
+Bind window-move to better navigation control
+#+begin_src emacs-lisp :tangle "yes"
+
+  (windmove-default-keybindings)
+
+#+end_src
+
+* Usage *
+
+Shift+arrowsKeys
+
+*** TODO Window navigation settings
+
+*** TODO Add path finding and better compilation enhancement, maybe...
+
+*** TODO MAGITTTTTTTTT
+
+*** TODO Moreeeeeeeeee Orgggggg-Modeeeeeeee
+
+*** TODO Shell integration and much moreeeeeeeee thingssssssss
 
 
 
