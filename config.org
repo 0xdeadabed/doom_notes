@@ -599,14 +599,20 @@ Set split to side-by-side
 
 Bind window-move to better navigation control
 #+begin_src emacs-lisp :tangle "yes"
-
+  ;; Bind widnow-move to better navigation control
+  ;; Shift + arrowsKeys to navigate
   (windmove-default-keybindings)
+
+  ;; Change the cursor pointer
+  (setq-default cursor-type 'bar)
+
+  ;; Display the line numbers
+  (when (version<= "26.0.50" emacs-version )
+  (global-display-line-numbers-mode))
 
 #+end_src
 
-* Usage *
-
-Shift+arrowsKeys
+* TODOS:
 
 *** TODO Window navigation settings
 
