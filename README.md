@@ -57,7 +57,7 @@ An important concept of "Evil Mode" is "Evil Leader" which is simply a key we pr
 
 ---
 
-# Managing projects
+## Managing projects
 
 A project is basically a project. That's it, yeah really just a directory for a particular codebase, and projects are handled with [proj][projectile] in doom.
 
@@ -81,8 +81,33 @@ To navigate to other files withing the current project we could do `Space Space`
 
 > We can `:w` `:q` in evil mode to save qnd quit.
 
+---
 
+## managing windows and navigation
 
+The most important part of an editor is window splitting, at least that is what i think. Emacs has the concept of buffers each window we open contains a buffer, if ever we happen to open the same file into two window we directely modify the same buffer.
+
+There is how we split, manage and navigate within doom emacs:
+
+`Space w w` -> this opens the same buffer in a vertically splitted window.
+
+Remember `space` is the ecil leader and the second `w` stands for window, that's being said when we press `Space w` a guidance would show up inside a minibuffer and we can simply choose `v` to the third argument which stands for vertical, `Space w v`.
+
+`Space w c` -> To close the currently selected window.
+
+> w = window
+> c = ? (I'm wondering)
+
+Once we split a window we can navigate through them using our mouse, but that is really not a good idea, one can get insulted by the emacs community for doing such a crime!
+
+There is how we navigate through windows:
+
+`C-h` -> Move to the left window.
+`C-l` -> Move to the right window.
+`C-j` -> Move to the up window.
+`C-k` -> Move to the down window.
+
+---
 ### Getting help
 
 As we have already said emacs is self-documented, meanning everything is documented inside emacs itself, if you need a well-written documentation you may consider open the help buffer by using `C-h` shortcut.
@@ -99,7 +124,8 @@ As we have already said emacs is self-documented, meanning everything is documen
 * C-c 1 -> To close other widnows.
 
 # TODO or maybe NEVER
-  * [ ] Window management and navigation.
+  * [x] Window managem ent and navigation.
+  * [ ] Project structure using neotree.
   * [ ] Explain emacs basic, like what is buffer and different modes and what M-x or C-c stand for.
   * [ ] The lovely magit. 
 
