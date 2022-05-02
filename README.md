@@ -7,35 +7,32 @@
 </p>
 
 # To be noted
-- It's based on my taste and most installed packages came from [awesome-emacs](https://github.com/emacs-tw/awesome-emacs#interface-enhancement)
-- Please make sure you read and understand well what you are doing ( MEANS DON'T COPY PASTE what you don't know )
-- Feel free to read the emacs wiki to understand better their philosophy, emacs is more than a text editor after all.
+It was originally my own configs that I wrote from scratch, that was pretty cool and a nice adventure but suddenly I realised that I needed a premade configuration so I can focus on my coding projects.
+
+Don't get me wrong but honestly trying to discover is pretty challenging and waste of time sometimes, fortunately a friend of mine at school told me about doom emacs, which is a configuration made and maintained by a community, that's it, it's really cool there are tons of features and packages and I don't even need to pay to have an advance IDE.
 
 ---
+
+# About doom
+`It is a story as old as time. A stubborn, shell-dwelling, and melodramatic vimmer—envious of the features of modern text editors—spirals into despair before he succumbs to the dark side. This is his config.`
 
 # Installation
-- I have written my config in [org-mode](https://emacs.christianbaeuerlein.com/my-org-config.html#orgc3bc9b5), you probably want to do same, in order to take proper notes.
-- Copy the init.el into your .emacs.d/ inside your home directory and read the config.org carefully, I have put notes and explainations inside it.
-- In case of any issues or doutes, please refer to the emacs wiki or [awesome-emacs](https://github.com/emacs-tw/awesome-emacs#interface-enhancement)
+
+Don't really get to much to say, just follow the official instructions in order to install it:
+
+* [ https://github.com/doomemacs/doomemacs ] 
 
 ---
 
-# Emacs basics
 
-Welcome to emacs, a subjectively best, advanced, extensible, customizable, self-documenting editor ever, it's more than just a text editor though...
 
-> We call Emacs advanced because it can do much more than simple insertion and deletion of text. It can control subprocesses, indent programs automatically, show multiple files at once, edit remote files like they were local files, and more. Emacs editing commands operate in terms of characters, words, lines, sentences, paragraphs, and pages, as well as expressions and comments in various programming languages.
-> -- <cite>[The GNU's official documentation][cite]</cite>
-
-[cite]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Intro.html
-
-### Key Inputs
+# Key Inputs
 
 Emacs uses multiple keybinding, meaning to do shortcuts you have to do multiple shortcuts, it may seems hard and even brainfuck but belive me it is not, it's a key which allows us to do more amazing things.
 
 [keyInputs]: [https://www.gnu.org/software/emacs/manual/html_node/emacs/User-Input.html]
 
-### Key shortcuts
+## Key shortcuts
 
 For instance when you see something like this `C-x C-c` it means you do `Ctrl+x` then `Ctrl+c`.
 
@@ -46,34 +43,6 @@ More on [Keys][keys].
 
 [keys]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Keys.html
 
-### Keybindings
-
-Every shortcut keys is some functions or commands happening under the hood, created and named by programmers, and of cource we can map new shortcuts to new commands, more on [Keys and Commands][keysAndCommands], and [Keymaps][keymaps].
-
-[KeysAndCommands]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Commands.html
-[keymaps]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Keymaps.html
-
----
-
-### Modes
-
-Emacs contains multiple modes, for instance we will talk about major mode. Every file has a major mode which determines the behaviour of file editing and provide specialized facilities for working on a particular file type, such as a C source file.
-
-You can see the file mode at the buttom of your window which is called [The Mode Line][mline], for example our [config.org][configlink] which is written in org mode would be something like `(Org ing...)`.
-
-[mline]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Mode-Line.html
-[configlink]: https://github.com/hypn0x/emacs.d/blob/main/config.org
-
-That being said, just know that emacs wouldn't behave the same way for a C source file as a text file.
-
-More on [major][majorm] mode.
-
-[majorm]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Major-Modes.html
-
-There is minor mode too, but I think I will not talk about it since it's optional and I still don't find it necessary, find out more about [minor mode][minorm] if you are curious.
-
-[minorm]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Minor-Modes.html
-
 ---
 
 ### Getting help
@@ -82,19 +51,10 @@ As we have already said emacs is self-documented, meanning everything is documen
 
 ---
 
-### Text editing
+# Text editing
 
-#### Inserting text
 
-No more `i` to write like the evil editor, inserting text in emacs is really simple and yet we have a large possibilities just by binding shortcuts to do amazing things, read more on text [inserting][texti] if you want to learn more.
-
-[texti]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Inserting-Text.html
-
-#### Deleting text
-
-As any normal text editors, backspace and delete behave normally, beside we have `C-d` that deletes the character just after the pointer, and `C-k` which deletes a line, `M-d` deltes a word.
-
-#### Undoing changes
+## Undoing changes
 
 The deafault undo shortcut `C-x u` does the basic undoing, but note that there is [Undo Tree][utree] which offers much more functionalities, I'll try to get used to it.
 
