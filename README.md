@@ -13,10 +13,10 @@ Don't get me wrong but honestly trying to discover is pretty challenging and was
 
 ---
 
-# About doom
+## About doom
 `It is a story as old as time. A stubborn, shell-dwelling, and melodramatic vimmer—envious of the features of modern text editors—spirals into despair before he succumbs to the dark side. This is his config.`
 
-# Installation
+## Installation
 
 Don't really get to much to say, just follow the official instructions in order to install it:
 
@@ -24,41 +24,68 @@ Don't really get to much to say, just follow the official instructions in order 
 
 ---
 
+## Key Inputs
 
+Emacs has three key concepts `modifiers`, `chords` and `sequences`.
 
-# Key Inputs
+A modifier is one of these:
 
-Emacs uses multiple keybinding, meaning to do shortcuts you have to do multiple shortcuts, it may seems hard and even brainfuck but belive me it is not, it's a key which allows us to do more amazing things.
+| Keyboard  | Symbol | Description |
+| Ctrl      | C      | Control key |
+| Left Alt  | M      | Meta key    |
+| Command   | S      | Super key   |
+| Right Alt | A      | Alt key     |
+
+Achord is a modifier plus another key, for example "C-x", meaning we press the control and x at the same time and then release them.
+
+A sequence is a series of chords, for example "C-x C-c" is a sequence, we press them at the same time, then release them, then press control and c at the same time and then release them.
+
+`C-x C-c` exits emacs BTW.
 
 [keyInputs]: [https://www.gnu.org/software/emacs/manual/html_node/emacs/User-Input.html]
 
-## Key shortcuts
+---
 
-For instance when you see something like this `C-x C-c` it means you do `Ctrl+x` then `Ctrl+c`.
+## About evil mode
+vim haters who still felt love to vim made a special extension to emacs called evil mode. It emulates a lot of vim's functionalities, and doom is mainly centered around evil mode.
 
-Another used key is `meta` often refered as `M-x`, means `meta + x` and meta key depends on the type of your keyboard and OS sometimes, but it generally is `alt` or `window`.
-  * NOTE: the ESC key could be used as a prefix to meta.
+<p align="center">
+  <b>Welcome to doom, a place where vim folks can feel home.</b>
+</p>
 
-More on [Keys][keys].
-
-[keys]: https://www.gnu.org/software/emacs/manual/html_node/emacs/Keys.html
+An important concept of "Evil Mode" is "Evil Leader" which is simply a key we press as the first step in a sequence that opens up a new branch of possible commands, and this key in doom is "space".
 
 ---
+
+# Managing projects
+
+A project is basically a project. That's it, yeah really just a directory for a particular codebase, and projects are handled with [proj][projectile] in doom.
+
+[proj]: https://github.com/bbatsov/projectile
+
+If you want to work on different projects in emacs you have to somehow add it to your list of projects.
+
+To add a project, run the following command:
+
+``` emacs-lisp
+:projectile-add-known-project "~/<dir-to-project>"
+```
+
+> when writing projectile- there are planety of auto completions, make sure to give it a shot.
+
+Once we add our project to the list we can then do `Space p p`, it will pop a minibuffer in the bottom of the editor which contains the list of our projects, we could then choose the project we want to work on, though it won't really open the project it would then pop a new minibuffer containing the list of files inside the project root.
+
+Once we pick a file to open we're in the normal mode just like vim, which means the editor waits for command if we want to start writing we should press `i` to enter into the insert mode.
+
+To navigate to other files withing the current project we could do `Space Space` which will pop once again a minibuffer containing all the files.
+
+> We can `:w` `:q` in evil mode to save qnd quit.
+
+
 
 ### Getting help
 
 As we have already said emacs is self-documented, meanning everything is documented inside emacs itself, if you need a well-written documentation you may consider open the help buffer by using `C-h` shortcut.
-
----
-
-# Text editing
-
-
-## Undoing changes
-
-The deafault undo shortcut `C-x u` does the basic undoing, but note that there is [Undo Tree][utree] which offers much more functionalities, I'll try to get used to it.
-
-[utree]: https://www.emacswiki.org/emacs/UndoTree
 
 ---------------------
 
@@ -72,9 +99,7 @@ The deafault undo shortcut `C-x u` does the basic undoing, but note that there i
 * C-c 1 -> To close other widnows.
 
 # TODO or maybe NEVER
-
-- Emacs basics.
-- Explain emacs basic, like what is buffer and different modes and what M-x or C-c stand for.
-- Clean up the config.org
-- Write cleaner installation instructions...
+  * [ ] Window management and navigation.
+  * [ ] Explain emacs basic, like what is buffer and different modes and what M-x or C-c stand for.
+  * [ ] The lovely magit. 
 
