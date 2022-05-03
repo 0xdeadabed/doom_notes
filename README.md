@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="80%" src="https://github.com/hypn0x/emacs.d/blob/main/showcases/emacs.png">
+  <img width="80%" src="https://github.com/bytecorruption/doom_notes/blob/main/doom.d/meditate.jpg">
 </p>
 
 <p align="center">
