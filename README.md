@@ -6,7 +6,8 @@
   <b> My emacs configurations </b>
 </p>
 
-# To be noted
+## To be noted
+
 It was originally my own configs that I wrote from scratch, that was pretty cool and a nice adventure but suddenly I realised that I needed a premade configuration so I can focus on my coding projects.
 
 Don't get me wrong but honestly trying to discover is pretty challenging and waste of time sometimes, fortunately a friend of mine at school told me about doom emacs, which is a configuration made and maintained by a community, that's it, it's really cool there are tons of features and packages and I don't even need to pay to have an advance IDE.
@@ -22,7 +23,6 @@ Don't really get to much to say, just follow the official instructions in order 
 
 * [ https://github.com/doomemacs/doomemacs ] 
 
----
 
 ## Key Inputs
 
@@ -44,7 +44,6 @@ A sequence is a series of chords, for example "C-x C-c" is a sequence, we press 
 
 [keyInputs]: [https://www.gnu.org/software/emacs/manual/html_node/emacs/User-Input.html]
 
----
 
 ## About evil mode
 vim haters who still felt love to vim made a special extension to emacs called evil mode. It emulates a lot of vim's functionalities, and doom is mainly centered around evil mode.
@@ -55,7 +54,6 @@ vim haters who still felt love to vim made a special extension to emacs called e
 
 An important concept of "Evil Mode" is "Evil Leader" which is simply a key we press as the first step in a sequence that opens up a new branch of possible commands, and this key in doom is "space".
 
----
 
 ## Managing projects
 
@@ -81,7 +79,6 @@ To navigate to other files withing the current project we could do `Space Space`
 
 > We can `:w` `:q` in evil mode to save qnd quit.
 
----
 
 ## managing windows and navigation
 
@@ -102,10 +99,27 @@ Once we split a window we can navigate through them using our mouse, but that is
 
 There is how we navigate through windows:
 
-`C-h` -> Move to the left window.
-`C-l` -> Move to the right window.
-`C-j` -> Move to the up window.
-`C-k` -> Move to the down window.
+`Space-w C-h` -> Move to the left window.
+
+`Space-w C-l` -> Move to the right window.
+
+`Space-w C-j` -> Move to the up window.
+
+`Space-w C-k` -> Move to the down window.
+
+## Treemacs 
+
+Most of us are familiar with having a sidebar tree to see our project structure, fortunately doom do the job, there are two treepackages preconfigured `neotree` and `treemacs`, but they're not enabled by default so we have to enable them.
+
+When we first installed doom, it created a directory inside our $HOME called `.doom.d`, inside this directory there are 3 files, what we are interested in is `init.el` where all the available packages are listed, but some of them are not activated we need to uncomment a package in order to activate it.
+
+Feel free to check out the listed packages and see what can serve you as well.
+
+Once we uncommented a package we should syncronize doom by running ```doom sync```, if you don't have doom in your $PATH you should run ```~/.emacs.d/bin/doom sync```.
+
+So in our case we uncomment `treemacs`, that's what i would like to work on, feel free to use `neotree` if you wish. Then we do ```doom sync```.
+
+To open treemacs we do `Space o p`.
 
 ---
 ### Getting help
