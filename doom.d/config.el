@@ -78,3 +78,14 @@
 ;; Set dashboard banner
 
 (setq fancy-splash-image "~/.doom.d/meditate.jpg")
+
+;; Bind widnow-move to better navigation control
+;; Shift + arrowsKeys to navigate
+(windmove-default-keybindings)
+
+;; Change the cursor pointer
+(setq-default cursor-type 'bar)
+
+;; Display the line numbers
+(when (version<= "26.0.50" emacs-version )
+(global-display-line-numbers-mode))

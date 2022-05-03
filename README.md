@@ -121,6 +121,10 @@ So in our case we uncomment `treemacs`, that's what i would like to work on, fee
 
 To open treemacs we do `Space o p`.
 
+### Simpler navigation
+
+I have configured window navigation in my config.el, `Shift + arrow keys` lets us to navigate through the windows.
+
 ---
 ### Getting help
 
