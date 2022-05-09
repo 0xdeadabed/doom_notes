@@ -17,6 +17,12 @@ Don't get me wrong but honestly trying to discover is pretty challenging and was
 ## About doom
 `It is a story as old as time. A stubborn, shell-dwelling, and melodramatic vimmer—envious of the features of modern text editors—spirals into despair before he succumbs to the dark side. This is his config.`
 
+## Dependencies
+
+```
+emacs(of course), ripgrepp
+```
+
 ## Installation
 
 Don't really get to much to say, just follow the official instructions in order to install it:
