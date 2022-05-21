@@ -77,7 +77,7 @@
 
 ;; Set dashboard banner
 
-(setq fancy-splash-image "~/.doom.d/meditate.jpg")
+;(setq fancy-splash-image "~/.doom.d/meditate.jpg")
 
 ;; Bind widnow-move to better navigation control
 ;; Shift + arrowsKeys to navigate
